@@ -16,8 +16,9 @@ public class JdbiFactory {
                       PooledDataSourceFactory configuration,
                       String name) {
         ManagedDataSource dataSource = configuration.build(environment.metrics(), name);
-        final String validationQuery = configuration.getValidationQuery();
-        final Jdbi jdbi = Jdbi.create(dataSource);
+        String validationQuery = configuration.getValidationQuery();
+        Jdbi jdbi = Jdbi.create(dataSource);
+        jdbi.installPlugins();
 
         environment.lifecycle().manage(dataSource);
         environment.healthChecks().register(name, new JdbiHealthCheck(
