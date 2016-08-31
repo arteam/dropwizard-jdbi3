@@ -4,7 +4,7 @@ import io.dropwizard.db.ManagedDataSource;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.util.Duration;
-import org.jdbi.v3.Jdbi;
+import org.jdbi.v3.core.Jdbi;
 
 /**
  * @author Artem Prigoda

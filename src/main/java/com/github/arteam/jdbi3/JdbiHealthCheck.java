@@ -3,8 +3,8 @@ package com.github.arteam.jdbi3;
 import com.codahale.metrics.health.HealthCheck;
 import io.dropwizard.db.TimeBoundHealthCheck;
 import io.dropwizard.util.Duration;
-import org.jdbi.v3.Handle;
-import org.jdbi.v3.Jdbi;
+import org.jdbi.v3.core.Handle;
+import org.jdbi.v3.core.Jdbi;
 
 import java.util.concurrent.ExecutorService;
 
