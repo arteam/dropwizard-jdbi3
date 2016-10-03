@@ -64,6 +64,12 @@
             <version>3.0.0-alpha2</version>
         </dependency>
 
+``        <dependency>
+            <groupId>com.github.arteam</groupId>
+            <artifactId>metrics-jdbi3</artifactId>
+            <version>0.1</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
