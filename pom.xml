@@ -61,10 +61,10 @@
         <dependency>
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi3</artifactId>
-            <version>3.0.0-alpha2</version>
+            <version>3.0.0-alpha3</version>
         </dependency>
 
-``        <dependency>
+        <dependency>
             <groupId>com.github.arteam</groupId>
             <artifactId>metrics-jdbi3</artifactId>
             <version>0.1</version>
@@ -97,21 +97,21 @@
         <dependency>
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi3-sqlobject</artifactId>
-            <version>3.0.0-alpha2</version>
+            <version>3.0.0-alpha3</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi3-guava</artifactId>
-            <version>3.0.0-alpha2</version>
+            <version>3.0.0-alpha3</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi3-jodatime</artifactId>
-            <version>3.0.0-alpha2</version>
+            <version>3.0.0-alpha3</version>
             <scope>test</scope>
         </dependency>
 

@@ -49,29 +49,29 @@ public class JdbiTest {
         dbi = new JdbiFactory().build(environment, dataSourceFactory, "hsql");
 
         dbi.useHandle(h -> {
-            h.createStatement("DROP TABLE people IF EXISTS").execute();
-            h.createStatement(
+            h.createUpdate("DROP TABLE people IF EXISTS").execute();
+            h.createUpdate(
                     "CREATE TABLE people (name varchar(100) primary key, email varchar(100), age int, created_at timestamp)")
                     .execute();
-            h.createStatement("INSERT INTO people VALUES (?, ?, ?, ?)")
+            h.createUpdate("INSERT INTO people VALUES (?, ?, ?, ?)")
                     .bind(0, "Coda Hale")
                     .bind(1, "chale@yammer-inc.com")
                     .bind(2, 30)
                     .bind(3, new Timestamp(1365465078000L))
                     .execute();
-            h.createStatement("INSERT INTO people VALUES (?, ?, ?, ?)")
+            h.createUpdate("INSERT INTO people VALUES (?, ?, ?, ?)")
                     .bind(0, "Kris Gale")
                     .bind(1, "kgale@yammer-inc.com")
                     .bind(2, 32)
                     .bind(3, new Timestamp(1365465078000L))
                     .execute();
-            h.createStatement("INSERT INTO people VALUES (?, ?, ?, ?)")
+            h.createUpdate("INSERT INTO people VALUES (?, ?, ?, ?)")
                     .bind(0, "Old Guy")
                     .bindNull(1, Types.VARCHAR)
                     .bind(2, 99)
                     .bind(3, new Timestamp(1365465078000L))
                     .execute();
-            h.createStatement("INSERT INTO people VALUES (?, ?, ?, ?)")
+            h.createUpdate("INSERT INTO people VALUES (?, ?, ?, ?)")
                     .bind(0, "Alice Example")
                     .bind(1, "alice@example.org")
                     .bind(2, 99)
