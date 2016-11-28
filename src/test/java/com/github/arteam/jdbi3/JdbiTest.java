@@ -35,11 +35,12 @@ public class JdbiTest {
 
     private Jdbi dbi;
     private PersonDAO dao;
+    private MetricRegistry metricRegistry = new MetricRegistry();
 
     @Before
     public void setUp() throws Exception {
         environment = new Environment("test", new ObjectMapper(), Validators.newValidator(),
-                new MetricRegistry(), ClassLoader.getSystemClassLoader());
+                metricRegistry, ClassLoader.getSystemClassLoader());
 
         DataSourceFactory dataSourceFactory = new DataSourceFactory();
         dataSourceFactory.setUrl("jdbc:h2:mem:jdbi3-" + System.currentTimeMillis());
@@ -90,6 +91,7 @@ public class JdbiTest {
         for (LifeCycle lc : environment.lifecycle().getManagedObjects()) {
             lc.stop();
         }
+        System.out.println(metricRegistry.getTimers());
     }
 
     @Test
