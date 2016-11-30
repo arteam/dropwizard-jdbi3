@@ -10,6 +10,7 @@ import io.dropwizard.logging.BootstrapLogging;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.jdbi.v3.core.Jdbi;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -127,5 +128,18 @@ public class JdbiTest {
     public void worksWithAbsentOptionalDates() {
         Optional<LocalDate> date = dao.getLastPlayedDateByTeams("Vancouver Canucks", "NY Rangers");
         assertThat(date).isEmpty();
+    }
+
+    @Test
+    public void testJodaTimeWorksForDateTimes() {
+        dbi.useHandle(h -> assertThat(h.createQuery("select played_at from games " +
+                "where home_scored > visitor_scored " +
+                "and played_at > :played_at")
+                .bind("played_at", org.joda.time.LocalDate.parse("2016-02-15").toDateTimeAtStartOfDay())
+                .mapTo(DateTime.class)
+                .stream()
+                .map(DateTime::toLocalDate)
+                .collect(Collectors.toList())).containsOnly(
+                org.joda.time.LocalDate.parse("2016-05-14"), org.joda.time.LocalDate.parse("2016-03-10")));
     }
 }
