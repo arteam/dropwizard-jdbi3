@@ -1,23 +1,22 @@
 package com.github.arteam.jdbi3;
 
-
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jersey.validation.Validators;
 import io.dropwizard.logging.BootstrapLogging;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.Query;
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.time.LocalDate;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +33,7 @@ public class JdbiTest {
     private Environment environment;
 
     private Jdbi dbi;
-    private PersonDAO dao;
+    private GameDao dao;
     private MetricRegistry metricRegistry = new MetricRegistry();
 
     @Before
@@ -50,36 +49,10 @@ public class JdbiTest {
         dbi = new JdbiFactory().build(environment, dataSourceFactory, "hsql");
 
         dbi.useHandle(h -> {
-            h.createUpdate("DROP TABLE people IF EXISTS").execute();
-            h.createUpdate(
-                    "CREATE TABLE people (name varchar(100) primary key, email varchar(100), age int, created_at timestamp)")
-                    .execute();
-            h.createUpdate("INSERT INTO people VALUES (?, ?, ?, ?)")
-                    .bind(0, "Coda Hale")
-                    .bind(1, "chale@yammer-inc.com")
-                    .bind(2, 30)
-                    .bind(3, new Timestamp(1365465078000L))
-                    .execute();
-            h.createUpdate("INSERT INTO people VALUES (?, ?, ?, ?)")
-                    .bind(0, "Kris Gale")
-                    .bind(1, "kgale@yammer-inc.com")
-                    .bind(2, 32)
-                    .bind(3, new Timestamp(1365465078000L))
-                    .execute();
-            h.createUpdate("INSERT INTO people VALUES (?, ?, ?, ?)")
-                    .bind(0, "Old Guy")
-                    .bindNull(1, Types.VARCHAR)
-                    .bind(2, 99)
-                    .bind(3, new Timestamp(1365465078000L))
-                    .execute();
-            h.createUpdate("INSERT INTO people VALUES (?, ?, ?, ?)")
-                    .bind(0, "Alice Example")
-                    .bind(1, "alice@example.org")
-                    .bind(2, 99)
-                    .bindNull(3, Types.TIMESTAMP)
-                    .execute();
+            h.createScript(Resources.toString(Resources.getResource("schema.sql"), Charsets.UTF_8)).execute();
+            h.createScript(Resources.toString(Resources.getResource("data.sql"), Charsets.UTF_8)).execute();
         });
-        dao = dbi.onDemand(PersonDAO.class);
+        dao = dbi.onDemand(GameDao.class);
 
         for (LifeCycle lc : environment.lifecycle().getManagedObjects()) {
             lc.start();
@@ -95,63 +68,64 @@ public class JdbiTest {
     }
 
     @Test
-    public void createsAValidDBI() {
-        dbi.useHandle(h -> {
-            Query<String> names = h.createQuery("SELECT name FROM people WHERE age < ?")
-                    .bind(0, 50)
-                    .mapTo(String.class);
-            assertThat(names).containsOnly("Coda Hale", "Kris Gale");
-        });
+    public void fluentQueryWorks() {
+        dbi.useHandle(h -> assertThat(h.createQuery("select id from games " +
+                "where home_scored>visitor_scored " +
+                "and played_at > :played_at")
+                .bind("played_at", LocalDate.of(2016, 2, 15))
+                .mapTo(Integer.class)
+                .collect(Collectors.toList())).containsOnly(2, 5));
     }
 
     @Test
-    public void sqlObjectsCanAcceptOptionalParams() {
-        assertThat(dao.findByName(Optional.of("Coda Hale")))
-                .isEqualTo("Coda Hale");
+    public void canAcceptOptionalParams() {
+        assertThat(dao.findHomeTeamByGameId(Optional.of(4))).contains("Dallas Stars");
     }
 
     @Test
-    public void sqlObjectsCanReturnImmutableLists() {
-        assertThat(dao.findAllNames())
-                .containsOnly("Coda Hale", "Kris Gale", "Old Guy", "Alice Example");
+    public void canAcceptEmptyOptionalParams() {
+        assertThat(dao.findHomeTeamByGameId(Optional.empty())).isEmpty();
     }
 
     @Test
-    public void sqlObjectsCanReturnImmutableSets() {
-        assertThat(dao.findAllUniqueNames())
-                .containsOnly("Coda Hale", "Kris Gale", "Old Guy", "Alice Example");
+    public void canReturnImmutableLists() {
+        assertThat(dao.findGameIds()).containsExactly(1, 2, 3, 4, 5);
     }
 
     @Test
-    public void sqlObjectsCanReturnOptional() {
-        Optional<String> found = dao.findByEmail("chale@yammer-inc.com");
-        assertThat(found).isNotNull();
-        assertThat(found.isPresent()).isTrue();
-        assertThat(found.get()).isEqualTo("Coda Hale");
-
-
-        Optional<String> missing = dao.findByEmail("cemalettin.koc@gmail.com");
-        assertThat(missing).isNotNull();
-        assertThat(missing.isPresent()).isFalse();
-        assertThat(missing.orElse(null)).isNull();
+    public void canReturnImmutableSets() {
+        assertThat(dao.findAllUniqueHomeTeams()).containsOnly("NY Rangers", "Toronto Maple Leafs", "Dallas Stars");
     }
 
     @Test
-    public void sqlObjectsCanReturnJodaDateTime() {
-        DateTime found = dao.getLatestCreatedAt(new DateTime(1365465077000L));
-        assertThat(found).isNotNull();
-        assertThat(found.getMillis()).isEqualTo(1365465078000L);
-        assertThat(found).isEqualTo(new DateTime(1365465078000L));
+    public void canReturnOptional() {
+        Optional<Integer> id = dao.findIdByTeamsAndDate("NY Rangers", "Vancouver Canucks",
+                LocalDate.of(2016, 5, 14));
+        assertThat(id).contains(2);
+    }
 
-        DateTime notFound = dao.getCreatedAtByEmail("alice@example.org");
-        assertThat(notFound).isNull();
+    @Test
+    public void canReturnEmptyOptional() {
+        Optional<Integer> id = dao.findIdByTeamsAndDate("Vancouver Canucks", "NY Rangers",
+                LocalDate.of(2016, 5, 14));
+        assertThat(id).isEmpty();
+    }
 
-        Optional<DateTime> absentDateTime = dao.getCreatedAtByName("Alice Example");
-        assertThat(absentDateTime).isNotNull();
-        assertThat(absentDateTime.isPresent()).isFalse();
+    @Test
+    public void worksWithDates() {
+        LocalDate date = dao.getFirstPlayedSince(LocalDate.of(2016, 3, 1));
+        assertThat(date).isEqualTo(LocalDate.of(2016, 2, 15));
+    }
 
-        Optional<DateTime> presentDateTime = dao.getCreatedAtByName("Coda Hale");
-        assertThat(presentDateTime).isNotNull();
-        assertThat(presentDateTime.isPresent()).isTrue();
+    @Test
+    public void worksWithOptionalDates() {
+        Optional<LocalDate> date = dao.getLastPlayedDateByTeams("NY Rangers", "Vancouver Canucks");
+        assertThat(date).contains(LocalDate.of(2016, 5, 14));
+    }
+
+    @Test
+    public void worksWithAbsentOptionalDates() {
+        Optional<LocalDate> date = dao.getLastPlayedDateByTeams("Vancouver Canucks", "NY Rangers");
+        assertThat(date).isEmpty();
     }
 }
