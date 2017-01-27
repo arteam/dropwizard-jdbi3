@@ -2,8 +2,8 @@ package com.github.arteam.jdbi3;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import org.jdbi.v3.sqlobject.Bind;
-import org.jdbi.v3.sqlobject.SqlQuery;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
 
 import java.time.LocalDate;
 import java.util.Optional;
