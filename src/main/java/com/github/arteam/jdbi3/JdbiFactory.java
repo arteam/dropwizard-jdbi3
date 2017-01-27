@@ -1,7 +1,5 @@
 package com.github.arteam.jdbi3;
 
-import com.github.arteam.jdbi3.strategies.DelegatingStatementNameStrategy;
-import com.github.arteam.jdbi3.strategies.NameStrategies;
 import com.github.arteam.jdbi3.strategies.SmartNameStrategy;
 import io.dropwizard.db.ManagedDataSource;
 import io.dropwizard.db.PooledDataSourceFactory;
@@ -9,7 +7,6 @@ import io.dropwizard.setup.Environment;
 import io.dropwizard.util.Duration;
 import org.jdbi.v3.core.Jdbi;
 
-import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * @author Artem Prigoda
