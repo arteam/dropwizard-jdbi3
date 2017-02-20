@@ -3,44 +3,34 @@ package com.github.arteam.jdbi3;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.locator.UseClasspathSqlLocator;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.stringtemplate4.UseStringTemplateSqlLocator;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
+@UseStringTemplateSqlLocator
 public interface GameDao {
 
-    @SqlQuery("select id from games order by id")
+    @SqlQuery
     ImmutableList<Integer> findGameIds();
 
-    @SqlQuery("select distinct home_team from games")
+    @SqlQuery
     ImmutableSet<String> findAllUniqueHomeTeams();
 
-    @SqlQuery("select id " +
-            "from games " +
-            "where home_team = :home_team " +
-            "and visitor_team = visitor_team " +
-            "and played_at = :played_at")
+    @SqlQuery
     Optional<Integer> findIdByTeamsAndDate(@Bind("home_team") String homeTeam,
                                            @Bind("visitor_team") String visitorTeam,
                                            @Bind("played_at") LocalDate date);
 
-    @SqlQuery("select played_at " +
-            "from games " +
-            "where played_at < :up " +
-            "order by played_at desc " +
-            "limit 1")
+    @SqlQuery
     LocalDate getFirstPlayedSince(@Bind("up") LocalDate up);
 
-    @SqlQuery("select played_at " +
-            "from games " +
-            "where home_team = :home_team " +
-            "and visitor_team = visitor_team " +
-            "order by played_at desc " +
-            "limit 1")
+    @SqlQuery
     Optional<LocalDate> getLastPlayedDateByTeams(@Bind("home_team") String homeTeam,
                                              @Bind("visitor_team") String visitorTeam);
 
-    @SqlQuery("select home_team from games where id=:id")
+    @SqlQuery
     Optional<String> findHomeTeamByGameId(@Bind("id") Optional<Integer> id);
 }

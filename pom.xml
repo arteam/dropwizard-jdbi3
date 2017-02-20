@@ -121,6 +121,13 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-stringtemplate4</artifactId>
+            <version>${jdbi.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>
