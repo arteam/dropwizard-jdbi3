@@ -1,9 +1,9 @@
 package com.github.arteam.jdbi3;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.jdbi.v3.sqlobject.customizer.Bind;
-import org.jdbi.v3.sqlobject.locator.UseClasspathSqlLocator;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.stringtemplate4.UseStringTemplateSqlLocator;
 
@@ -28,8 +28,9 @@ public interface GameDao {
     LocalDate getFirstPlayedSince(@Bind("up") LocalDate up);
 
     @SqlQuery
+    @Timed(name = "get-last-played")
     Optional<LocalDate> getLastPlayedDateByTeams(@Bind("home_team") String homeTeam,
-                                             @Bind("visitor_team") String visitorTeam);
+                                                 @Bind("visitor_team") String visitorTeam);
 
     @SqlQuery
     Optional<String> findHomeTeamByGameId(@Bind("id") Optional<Integer> id);
