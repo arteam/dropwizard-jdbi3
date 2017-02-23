@@ -63,7 +63,7 @@
         <dependency>
             <groupId>com.github.arteam</groupId>
             <artifactId>metrics-jdbi3</artifactId>
-            <version>0.2</version>
+            <version>1.0-rc1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jdbi</groupId>
