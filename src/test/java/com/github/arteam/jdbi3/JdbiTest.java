@@ -2,6 +2,7 @@ package com.github.arteam.jdbi3;
 
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.arteam.jdbi3.strategies.TimedAnnotationNameStrategy;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import io.dropwizard.db.DataSourceFactory;
@@ -47,7 +48,7 @@ public class JdbiTest {
         dataSourceFactory.setUser("sa");
         dataSourceFactory.setDriverClass("org.h2.Driver");
 
-        dbi = new JdbiFactory().build(environment, dataSourceFactory, "hsql");
+        dbi = new JdbiFactory(new TimedAnnotationNameStrategy()).build(environment, dataSourceFactory, "hsql");
 
         dbi.useHandle(h -> {
             h.createScript(Resources.toString(Resources.getResource("schema.sql"), Charsets.UTF_8)).execute();
