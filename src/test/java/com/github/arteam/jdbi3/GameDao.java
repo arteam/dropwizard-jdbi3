@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @UseStringTemplateSqlLocator
+@Timed(name = "game-dao")
 public interface GameDao {
 
     @SqlQuery
@@ -28,7 +29,7 @@ public interface GameDao {
     LocalDate getFirstPlayedSince(@Bind("up") LocalDate up);
 
     @SqlQuery
-    @Timed(name = "get-last-played")
+    @Timed(name = "last-played-date")
     Optional<LocalDate> getLastPlayedDateByTeams(@Bind("home_team") String homeTeam,
                                                  @Bind("visitor_team") String visitorTeam);
 
