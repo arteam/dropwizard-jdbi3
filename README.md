@@ -13,6 +13,6 @@ for SQL queries and a health check for the connection.
 <dependency>
   <groupId>com.github.arteam</groupId>
   <artifactId>dropwizard-jdbi3</artifactId>
-  <version>1.0</version>
+  <version>1.0-rc3</version>
 </dependency>
 ```
