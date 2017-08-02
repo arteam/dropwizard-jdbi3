@@ -5,6 +5,8 @@ import io.dropwizard.db.TimeBoundHealthCheck;
 import io.dropwizard.util.Duration;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 
@@ -13,6 +15,7 @@ import java.util.concurrent.ExecutorService;
  * @since 28.07.16
  */
 public class JdbiHealthCheck extends HealthCheck {
+    private static final Logger log = LoggerFactory.getLogger(JdbiHealthCheck.class);
 
     private final Jdbi jdbi;
     private final String validationQuery;
@@ -30,6 +33,9 @@ public class JdbiHealthCheck extends HealthCheck {
             try (Handle handle = jdbi.open()) {
                 handle.execute(validationQuery);
                 return Result.healthy();
+            } catch (Exception e) {
+                log.error("jDBI Healthcheck failed. validation-query={}", validationQuery, e);
+                return Result.unhealthy("Validation query failed");
             }
         });
     }
