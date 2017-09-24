@@ -7,32 +7,29 @@ import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.MappingException;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class HealthCheckTest {
-    @Rule
-    public final MockitoRule mockito = MockitoJUnit.rule();
 
     private JdbiHealthCheck healthCheck;
+
     @Mock
     private Jdbi jdbi;
+
     @Mock
     private Handle h;
 
     @Before
     public void init() {
         when(jdbi.open()).thenReturn(h);
-        healthCheck = new JdbiHealthCheck(
-                MoreExecutors.newDirectExecutorService(),
-                Duration.seconds(5),
-                jdbi,
+        healthCheck = new JdbiHealthCheck(MoreExecutors.newDirectExecutorService(), Duration.seconds(5), jdbi,
                 "select 1");
     }
 
@@ -40,9 +37,7 @@ public class HealthCheckTest {
     public void shouldReturnNotHealthyBecauseOfErrorOnError() throws Exception {
         when(h.execute("select 1")).thenThrow(new MappingException("bad error here"));
 
-        final Result result = healthCheck.check();
-
-        assertThat(result).isNotNull()
+        assertThat(healthCheck.check()).isNotNull()
                 .extracting(Result::getMessage)
                 .containsOnly(JdbiHealthCheck.VALIDATION_QUERY_FAILED);
     }
