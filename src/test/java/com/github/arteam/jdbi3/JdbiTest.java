@@ -61,7 +61,6 @@ public class JdbiTest {
         for (LifeCycle lc : environment.lifecycle().getManagedObjects()) {
             lc.stop();
         }
-        System.out.println(metricRegistry.getTimers());
     }
 
     @Test
@@ -77,53 +76,59 @@ public class JdbiTest {
     @Test
     public void canAcceptOptionalParams() {
         assertThat(dao.findHomeTeamByGameId(Optional.of(4))).contains("Dallas Stars");
+        assertThat(metricRegistry.timer("game-dao.findHomeTeamByGameId").getCount()).isEqualTo(1);
     }
 
     @Test
     public void canAcceptEmptyOptionalParams() {
         assertThat(dao.findHomeTeamByGameId(Optional.empty())).isEmpty();
+        assertThat(metricRegistry.timer("game-dao.findHomeTeamByGameId").getCount()).isEqualTo(1);
     }
 
     @Test
     public void canReturnImmutableLists() {
         assertThat(dao.findGameIds()).containsExactly(1, 2, 3, 4, 5);
+        assertThat(metricRegistry.timer("game-dao.findGameIds").getCount()).isEqualTo(1);
     }
 
     @Test
     public void canReturnImmutableSets() {
         assertThat(dao.findAllUniqueHomeTeams()).containsOnly("NY Rangers", "Toronto Maple Leafs", "Dallas Stars");
+        assertThat(metricRegistry.timer("game-dao.findAllUniqueHomeTeams").getCount()).isEqualTo(1);
     }
 
     @Test
     public void canReturnOptional() {
-        Optional<Integer> id = dao.findIdByTeamsAndDate("NY Rangers", "Vancouver Canucks",
-                LocalDate.of(2016, 5, 14));
-        assertThat(id).contains(2);
+        assertThat(dao.findIdByTeamsAndDate("NY Rangers", "Vancouver Canucks",
+                LocalDate.of(2016, 5, 14))).contains(2);
+        assertThat(metricRegistry.timer("game-dao.findIdByTeamsAndDate").getCount()).isEqualTo(1);
     }
 
     @Test
     public void canReturnEmptyOptional() {
-        Optional<Integer> id = dao.findIdByTeamsAndDate("Vancouver Canucks", "NY Rangers",
-                LocalDate.of(2016, 5, 14));
-        assertThat(id).isEmpty();
+        assertThat(dao.findIdByTeamsAndDate("Vancouver Canucks", "NY Rangers",
+                LocalDate.of(2016, 5, 14))).isEmpty();
+        assertThat(metricRegistry.timer("game-dao.findIdByTeamsAndDate").getCount()).isEqualTo(1);
     }
 
     @Test
     public void worksWithDates() {
-        LocalDate date = dao.getFirstPlayedSince(LocalDate.of(2016, 3, 1));
-        assertThat(date).isEqualTo(LocalDate.of(2016, 2, 15));
+        assertThat(dao.getFirstPlayedSince(LocalDate.of(2016, 3, 1)))
+                .isEqualTo(LocalDate.of(2016, 2, 15));
+        assertThat(metricRegistry.timer("game-dao.getFirstPlayedSince").getCount()).isEqualTo(1);
     }
 
     @Test
     public void worksWithOptionalDates() {
         Optional<LocalDate> date = dao.getLastPlayedDateByTeams("NY Rangers", "Vancouver Canucks");
         assertThat(date).contains(LocalDate.of(2016, 5, 14));
+        assertThat(metricRegistry.timer("game-dao.last-played-date").getCount()).isEqualTo(1);
     }
 
     @Test
     public void worksWithAbsentOptionalDates() {
-        Optional<LocalDate> date = dao.getLastPlayedDateByTeams("Vancouver Canucks", "NY Rangers");
-        assertThat(date).isEmpty();
+        assertThat(dao.getLastPlayedDateByTeams("Vancouver Canucks", "NY Rangers")).isEmpty();
+        assertThat(metricRegistry.timer("game-dao.last-played-date").getCount()).isEqualTo(1);
     }
 
     @Test
