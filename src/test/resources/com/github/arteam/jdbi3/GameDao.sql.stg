@@ -1,35 +1,35 @@
 group GameDao;
 
 findGameIds() ::= <<
-select id from games order by id
+SELECT id FROM games ORDER BY id
 >>
 
 findAllUniqueHomeTeams() ::= <<
-select distinct home_team from games
+SELECT distinct home_team FROM games
 >>
 
 findIdByTeamsAndDate() ::= <<
-select id from games
-where home_team = :home_team
-and visitor_team = visitor_team
-and played_at = :played_at
+SELECT id FROM games
+WHERE home_team = :home_team
+AND   visitor_team = visitor_team
+AND   played_at = :played_at
 >>
 
 getFirstPlayedSince() ::= <<
-select played_at from games
-where played_at \< :up
-order by played_at desc
-limit 1
+SELECT   played_at FROM games
+WHERE    played_at \< :up
+ORDER BY played_at desc
+LIMIT 1
 >>
 
 getLastPlayedDateByTeams() ::= <<
-select played_at from games
-where home_team = :home_team
-and visitor_team = :visitor_team
-order by played_at desc
-limit 1
+SELECT   played_at FROM games
+WHERE    home_team = :home_team
+AND      visitor_team = :visitor_team
+ORDER BY played_at desc
+LIMIT 1
 >>
 
 findHomeTeamByGameId() ::= <<
-select home_team from games where id=:id
+SELECT home_team FROM games WHERE id=:id
 >>
