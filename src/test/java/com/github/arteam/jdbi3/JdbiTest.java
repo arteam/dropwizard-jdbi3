@@ -40,18 +40,17 @@ public class JdbiTest {
                 metricRegistry, ClassLoader.getSystemClassLoader());
 
         DataSourceFactory dataSourceFactory = new DataSourceFactory();
-        dataSourceFactory.setUrl("jdbc:h2:mem:jdbi3-" + System.currentTimeMillis());
+        dataSourceFactory.setUrl("jdbc:h2:mem:jdbi3-test");
         dataSourceFactory.setUser("sa");
         dataSourceFactory.setDriverClass("org.h2.Driver");
+        dataSourceFactory.asSingleConnectionPool();
 
-        dbi = new JdbiFactory(new TimedAnnotationNameStrategy()).build(environment, dataSourceFactory, "hsql");
-
-        dbi.useHandle(h -> {
+        dbi = new JdbiFactory(new TimedAnnotationNameStrategy()).build(environment, dataSourceFactory, "h2");
+        dbi.useTransaction(h -> {
             h.createScript(Resources.toString(Resources.getResource("schema.sql"), Charsets.UTF_8)).execute();
             h.createScript(Resources.toString(Resources.getResource("data.sql"), Charsets.UTF_8)).execute();
         });
         dao = dbi.onDemand(GameDao.class);
-
         for (LifeCycle lc : environment.lifecycle().getManagedObjects()) {
             lc.start();
         }
@@ -67,9 +66,9 @@ public class JdbiTest {
 
     @Test
     public void fluentQueryWorks() {
-        dbi.useHandle(h -> assertThat(h.createQuery("select id from games " +
-                "where home_scored>visitor_scored " +
-                "and played_at > :played_at")
+        dbi.useHandle(h -> assertThat(h.createQuery("SELECT id FROM games " +
+                "WHERE home_scored>visitor_scored " +
+                "AND played_at > :played_at")
                 .bind("played_at", LocalDate.of(2016, 2, 15))
                 .mapTo(Integer.class)
                 .collect(Collectors.toList())).containsOnly(2, 5));
@@ -129,9 +128,9 @@ public class JdbiTest {
 
     @Test
     public void testJodaTimeWorksForDateTimes() {
-        dbi.useHandle(h -> assertThat(h.createQuery("select played_at from games " +
-                "where home_scored > visitor_scored " +
-                "and played_at > :played_at")
+        dbi.useHandle(h -> assertThat(h.createQuery("SELECT played_at FROM games " +
+                "WHERE home_scored > visitor_scored " +
+                "AND played_at > :played_at")
                 .bind("played_at", org.joda.time.LocalDate.parse("2016-02-15").toDateTimeAtStartOfDay())
                 .mapTo(DateTime.class)
                 .stream()
