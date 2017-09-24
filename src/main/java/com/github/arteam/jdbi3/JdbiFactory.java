@@ -8,10 +8,8 @@ import io.dropwizard.setup.Environment;
 import io.dropwizard.util.Duration;
 import org.jdbi.v3.core.Jdbi;
 
-
 /**
- * @author Artem Prigoda
- * @since 28.07.16
+ * A factory which create a new managed {@link Jdbi} instance based on the Dropwizard configuration.
  */
 public class JdbiFactory {
 

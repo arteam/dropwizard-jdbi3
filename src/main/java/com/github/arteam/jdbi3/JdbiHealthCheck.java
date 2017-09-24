@@ -11,8 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ExecutorService;
 
 /**
- * @author Artem Prigoda
- * @since 28.07.16
+ * Health check which verifies the availability of the database
  */
 public class JdbiHealthCheck extends HealthCheck {
     private static final Logger log = LoggerFactory.getLogger(JdbiHealthCheck.class);

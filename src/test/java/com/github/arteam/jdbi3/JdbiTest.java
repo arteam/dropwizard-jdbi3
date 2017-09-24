@@ -22,10 +22,6 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author Artem Prigoda
- * @since 28.07.16
- */
 public class JdbiTest {
 
     static {
