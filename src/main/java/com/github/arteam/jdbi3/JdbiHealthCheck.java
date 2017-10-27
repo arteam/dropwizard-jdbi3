@@ -15,7 +15,8 @@ import java.util.concurrent.ExecutorService;
  */
 public class JdbiHealthCheck extends HealthCheck {
     private static final Logger log = LoggerFactory.getLogger(JdbiHealthCheck.class);
-    protected static final String VALIDATION_QUERY_FAILED = "Validation query failed";
+
+    private static final String VALIDATION_QUERY_FAILED = "Validation query failed";
 
     private final Jdbi jdbi;
     private final String validationQuery;
