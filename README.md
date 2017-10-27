@@ -1,4 +1,7 @@
 # dropwizard-jdbi3
+[![Build Status](https://travis-ci.org/arteam/dropwizard-jdbi3.svg?branch=master)](https://travis-ci.org/arteam/dropwizard-jdbi3)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.arteam/dropwizard-jdbi3/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.arteam/dropwizard-jdbi3/)
+
 Dropwizard integration with JDBI3
 
 # Description
