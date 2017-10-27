@@ -37,8 +37,9 @@ public class HealthCheckTest {
     public void shouldReturnNotHealthyBecauseOfErrorOnError() throws Exception {
         when(h.execute("select 1")).thenThrow(new MappingException("bad error here"));
 
-        assertThat(healthCheck.check()).isNotNull()
+        Result check = healthCheck.check();
+        assertThat(check).isNotNull()
                 .extracting(Result::getMessage)
-                .containsOnly(JdbiHealthCheck.VALIDATION_QUERY_FAILED);
+                .containsOnly("bad error here");
     }
 }

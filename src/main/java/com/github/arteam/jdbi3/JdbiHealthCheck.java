@@ -16,8 +16,6 @@ import java.util.concurrent.ExecutorService;
 public class JdbiHealthCheck extends HealthCheck {
     private static final Logger log = LoggerFactory.getLogger(JdbiHealthCheck.class);
 
-    private static final String VALIDATION_QUERY_FAILED = "Validation query failed";
-
     private final Jdbi jdbi;
     private final String validationQuery;
     private final TimeBoundHealthCheck timeBoundHealthCheck;
@@ -35,8 +33,8 @@ public class JdbiHealthCheck extends HealthCheck {
                 handle.execute(validationQuery);
                 return Result.healthy();
             } catch (Exception e) {
-                log.error("jDBI Healthcheck failed. validation-query={}", validationQuery, e);
-                return Result.unhealthy(VALIDATION_QUERY_FAILED);
+                log.error("JDBI Health check failed. Validation query={}", validationQuery, e);
+                return Result.unhealthy(e);
             }
         });
     }
