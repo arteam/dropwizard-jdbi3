@@ -4,7 +4,7 @@
 
     <groupId>com.github.arteam</groupId>
     <artifactId>dropwizard-jdbi3</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3-SNAPSHOT</version>
 
     <name>Dropwizard module for JDBI3</name>
     <description>Integration between Dropwizard and JDBI3</description>
@@ -19,7 +19,7 @@
     <scm>
         <developerConnection>scm:git:git@github.com:arteam/dropwizard-jdbi3.git</developerConnection>
         <url>https://github.com/arteam/dropwizard-jdbi3.git</url>
-        <tag>dropwizard-jdbi3-1.2.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
