@@ -14,13 +14,23 @@ import org.jdbi.v3.core.Jdbi;
 public class JdbiFactory {
 
     private StatementNameStrategy nameStrategy;
+    private boolean autoInstallPlugins;
 
     public JdbiFactory() {
         this(new SmartNameStrategy());
     }
 
+    public JdbiFactory(boolean autoInstallPlugins) {
+        this(new SmartNameStrategy(), autoInstallPlugins);
+    }
+
     public JdbiFactory(StatementNameStrategy nameStrategy) {
+        this(nameStrategy, true);
+    }
+
+    public JdbiFactory(StatementNameStrategy nameStrategy, boolean autoInstallPlugins) {
         this.nameStrategy = nameStrategy;
+        this.autoInstallPlugins = autoInstallPlugins;
     }
 
     public Jdbi build(Environment environment,
@@ -30,7 +40,9 @@ public class JdbiFactory {
         String validationQuery = configuration.getValidationQuery();
         Jdbi jdbi = Jdbi.create(dataSource);
         jdbi.setTimingCollector(new InstrumentedTimingCollector(environment.metrics(), nameStrategy));
-        jdbi.installPlugins();
+        if (autoInstallPlugins) {
+            jdbi.installPlugins();
+        }
 
         environment.lifecycle().manage(dataSource);
         environment.healthChecks().register(name, new JdbiHealthCheck(
